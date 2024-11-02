@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "basics.h"
 
@@ -14,14 +15,12 @@ void print_bytes(uint8_t * data, size_t length)
     printf("\n");
 }
 
-/* 1.1 Convert hex to base64 */
 uint8_t * hex_to_base64(uint8_t * hex, size_t length)
 {
     char base64_lookup[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     //char padding = '=';
     // Overhead is add'l 33-37% the size of original binary data (Wikipedia)
     size_t output_size = length + (length * 4)/10;
-    //print_bytes(hex, length);
 
     uint8_t * base64 = calloc(output_size, sizeof(uint8_t));
 
@@ -38,7 +37,6 @@ uint8_t * hex_to_base64(uint8_t * hex, size_t length)
             value = current_byte >> 2;
             base64[output_index++] = base64_lookup[value];
             bits_used = 6;
-            // printf("current_byte=%x, value=%B\n", current_byte, value); 
             leftover_bits = (0b00000011 & current_byte) << 4;
         }
         else if (6 == bits_used)
@@ -71,9 +69,19 @@ uint8_t * hex_to_base64(uint8_t * hex, size_t length)
     }
 
     return base64;
-
 }
 
-/* 1.2 Fixed XOR */
-// TODO: Write a function that takes two equal-length buffers and produces their XOR combination. 
+
+uint8_t * fixed_xor(char * input, char * key)
+{
+    if (strlen(input) != strlen(key))
+    {
+        fprintf(stderr, "[-] Input buffer length and XOR key length mismatch");
+        exit(EXIT_FAILURE);
+    }
+
+    uint8_t * output = calloc(strlen(input)/2, sizeof(uint8_t));
+
+    return output;    
+}
 

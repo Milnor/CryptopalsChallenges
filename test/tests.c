@@ -79,5 +79,31 @@ int main()
     free(output);
 
     printf("[!] %d of 3 tests passed for Hex to Base64\n", successes);
+    successes = 0;
+
+    printf("[!] Testing 1.2 Fixed XOR...\n");
+
+    char buffer[] = "1c0111001f010100061a024b53535009181c";
+    char xor_key[] = "686974207468652062756c6c277320657965";
+    char answer[] =  "746865206b696420646f6e277420706c6179";
+
+    output = fixed_xor(buffer, xor_key);
+
+    if (strncmp(output, answer, strlen(answer)))
+    {
+        fprintf(stderr, "[-] Fixed XOR test failed:\n"
+                        "Expected: %s\n"
+                        "Actual: %s\n",
+                        answer, output);
+    }
+    else
+    {
+        successes++;
+        printf("[+] Fixed XOR test passed\n");
+    }
+
+    free(output);
+
+    printf("[!] %d of 1 tests passed for Fixed XOR\n", successes);
 }
 

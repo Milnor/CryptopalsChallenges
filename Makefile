@@ -14,6 +14,6 @@ tests: test/tests.c basics.o
 # TODO: memtest with valgrind, clang-tidy, linting...
 
 clean:
-	rm *.o
+	rm *.o tests
 
 .PHONY: all clean
