@@ -15,6 +15,49 @@ void print_bytes(uint8_t * data, size_t length)
     printf("\n");
 }
 
+uint8_t * hex_to_bytes(char * hex)
+{
+    if (strlen(hex) % 2 != 0)
+    {
+        fprintf(stderr, "[-] Odd number of characters in hex string\n");
+        exit(EXIT_FAILURE);
+    }
+
+    int length = strlen(hex) / 2;
+    uint8_t * bytes = malloc(length);
+
+    int prev = -1;
+    for (int i = 0; i < length; i++)
+    {
+        if (prev == i)                 // This check is never triggered,                 
+        {                              // but when I remove it, i
+            printf("i got stuck!\n");  // gets stuck at 1 and there is
+            exit(1);                   // an infinite loop.
+        }
+        //printf("i = %d, length = %d, hex[] = %02X\n", i, length, hex+(i*2));
+        uint8_t temp = 0;
+        if (1 > sscanf(hex+(i*2), "%2X", (unsigned int *)&temp))
+        {
+            fprintf(stderr, "[-] sscanf() failed to match\n");
+            exit(1);
+        }
+        bytes[i] = temp;
+        prev = i;
+    }
+
+    printf("Length of string: %ld\n", strlen(hex));
+    printf("Length of array:  %d\n", length);
+    printf("Hex string: %s\n", hex);
+    printf("Byte array: ");
+    for (int i = 0; i < length; i++)
+    {
+        printf("%x", bytes[i]);
+    }
+    printf("\n");
+
+    return bytes;
+}
+
 uint8_t * hex_to_base64(uint8_t * hex, size_t length)
 {
     char base64_lookup[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -80,7 +123,19 @@ uint8_t * fixed_xor(char * input, char * key)
         exit(EXIT_FAILURE);
     }
 
-    uint8_t * output = calloc(strlen(input)/2, sizeof(uint8_t));
+    size_t length = strlen(input) / 2;
+
+    uint8_t * output = malloc(length);
+    uint8_t * input_as_bytes = hex_to_bytes(input);
+    uint8_t * key_as_bytes = hex_to_bytes(key);
+
+    for (size_t i = 0; i < length; i++) 
+    {
+        output[i] = input_as_bytes[i] ^ key_as_bytes[i];
+    }
+
+    free(input_as_bytes);
+    free(key_as_bytes);
 
     return output;    
 }

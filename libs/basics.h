@@ -4,6 +4,12 @@
 #include <stdint.h>
 
 /*
+ * Convert a string of hex digits to a byte array.
+ */
+uint8_t * hex_to_bytes(char * hex);
+
+
+/*
  * Helper function for debug printing that is currently unused.
  */
 void print_bytes(uint8_t * data, size_t length);

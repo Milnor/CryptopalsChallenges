@@ -8,7 +8,7 @@
 int main()
 {
     printf("Tests for Set 1: Basics\n");
-    printf("[!] Testing 1.1 Hex to Base64...\n");
+    printf(" [!] Testing 1.1 Hex to Base64...\n");
 
     // No padding example from https://cryptopals.com/sets/1/challenges/1
     
@@ -26,15 +26,15 @@ int main()
     if (strncmp(output, pad0_output, strlen(pad0_output)))
     {
         // Failure
-        fprintf(stderr, "[-] No padding test failed:\n"
-                        "Expected: %s\n"
-                        "Actual: %s\n",
+        fprintf(stderr, " [-] No padding test failed:\n"
+                        "  Expected: %s\n"
+                        "  Actual: %s\n",
                         pad0_output, output);
     }
     else
     {
         successes++;
-        printf("[+] No padding test passed\n");
+        printf(" [+] No padding test passed\n");
     }
 
     free(output);
@@ -46,15 +46,15 @@ int main()
     
     if (strncmp(output, pad1_output, strlen(pad1_output)))
     {
-        fprintf(stderr, "[-] Pad 1 test failed:\n"
-                        "Expected: %s\n"
-                        "Actual: %s\n",
+        fprintf(stderr, " [-] Pad 1 test failed:\n"
+                        "  Expected: %s\n"
+                        "  Actual: %s\n",
                         pad1_output, output);
     }
     else
     {
         successes++;
-        printf("[+] Pad 1 test passed\n");
+        printf(" [+] Pad 1 test passed\n");
     }
 
     free(output);
@@ -65,23 +65,23 @@ int main()
 
     if (strncmp(output, pad2_output, strlen(pad2_output)))
     {
-        fprintf(stderr, "[-] Pad 2 test failed:\n"
-                        "Expected: %s\n"
-                        "Actual: %s\n",
+        fprintf(stderr, " [-] Pad 2 test failed:\n"
+                        "  Expected: %s\n"
+                        "  Actual: %s\n",
                         pad2_output, output);
     }
     else
     {
         successes++;
-        printf("[+] Pad 2 test passed\n");
+        printf(" [+] Pad 2 test passed\n");
     }
 
     free(output);
 
-    printf("[!] %d of 3 tests passed for Hex to Base64\n", successes);
+    printf(" [!] %d of 3 tests passed for Hex to Base64\n", successes);
     successes = 0;
 
-    printf("[!] Testing 1.2 Fixed XOR...\n");
+    printf(" [!] Testing 1.2 Fixed XOR...\n");
 
     char buffer[] = "1c0111001f010100061a024b53535009181c";
     char xor_key[] = "686974207468652062756c6c277320657965";
@@ -91,19 +91,19 @@ int main()
 
     if (strncmp(output, answer, strlen(answer)))
     {
-        fprintf(stderr, "[-] Fixed XOR test failed:\n"
-                        "Expected: %s\n"
-                        "Actual: %s\n",
+        fprintf(stderr, " [-] Fixed XOR test failed:\n"
+                        "  Expected: %s\n"
+                        "  Actual: %s\n",
                         answer, output);
     }
     else
     {
         successes++;
-        printf("[+] Fixed XOR test passed\n");
+        printf(" [+] Fixed XOR test passed\n");
     }
 
     free(output);
 
-    printf("[!] %d of 1 tests passed for Fixed XOR\n", successes);
+    printf(" [!] %d of 1 tests passed for Fixed XOR\n", successes);
 }
 
