@@ -58,25 +58,25 @@ uint8_t * hex_to_bytes(char * hex)
     //printf("Length of array:  %d\n", length);
     //printf("Hex string: %s\n", hex);
     //printf("Byte array: ");
-    for (int i = 0; i < length; i++)
-    {
-        printf("%02x", bytes[i]);
-    }
-    printf("\n");
+    //for (int i = 0; i < length; i++)
+    //{
+    //    printf("%02x", bytes[i]);
+    //}
+    //printf("\n");
 
     return bytes;
 }
 
 uint8_t * hex_to_base64(uint8_t * hex)
 {
-    char base64_lookup[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    //char padding = '=';
-    // Overhead is add'l 33-37% the size of original binary data (Wikipedia)
+    char base64_lookup[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstu"
+                             "vwxyz0123456789+/";
    
     size_t length = strlen(hex); 
     uint8_t * hex_as_bytes = malloc(length/2);
     hex_as_bytes = hex_to_bytes(hex);
 
+    // Overhead is add'l 33-37% the size of original binary data (Wikipedia)
     size_t output_size = length + (length * 4)/10;
 
     uint8_t * base64 = calloc(output_size, sizeof(uint8_t));
@@ -85,7 +85,7 @@ uint8_t * hex_to_base64(uint8_t * hex)
     uint8_t bits_used = 0;
     uint8_t leftover_bits = 0;
     uint8_t output_index = 0;
-    for (size_t i = 0; i < length; i++)
+    for (size_t i = 0; i < length / 2; i++)
     {
         uint8_t current_byte = hex_as_bytes[i]; // was hex
         if (0 == bits_used)
@@ -123,6 +123,14 @@ uint8_t * hex_to_base64(uint8_t * hex)
             exit(EXIT_FAILURE);
         }
 
+    }
+
+    // padding (=) is needed if unencoded input was not a multiple of 3
+    int input_len = length / 2;
+    while (input_len % 3 != 0)
+    {
+        base64[output_index++] = '=';
+        input_len++;
     }
 
     free(hex_as_bytes);
