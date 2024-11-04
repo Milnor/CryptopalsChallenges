@@ -11,7 +11,10 @@ tests: test/tests.c basics.o
 	$(CC) -o $@ basics.o tests.o
 	#$(CC) $(CFLAGS) $< -I./libs/
 
-# TODO: memtest with valgrind, clang-tidy, linting...
+# TODO: clang-tidy, linting...
+
+memtest: tests
+	valgrind -s ./$<
 
 clean:
 	rm *.o tests
