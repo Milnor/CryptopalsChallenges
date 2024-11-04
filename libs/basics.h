@@ -17,7 +17,7 @@ void print_bytes(uint8_t * data, size_t length);
 /*
  * 1.1 Convert hex to base64.
  */
-uint8_t * hex_to_base64(uint8_t * hex, size_t length);
+uint8_t * hex_to_base64(uint8_t * hex);
 
 /*
  * 1.2 Fixed XOR.

@@ -25,7 +25,7 @@ uint8_t * hex_to_bytes(char * hex)
 
     int length = strlen(hex) / 2;
     uint8_t * bytes = malloc(length);
-
+    /*
     int prev = -1;
     for (int i = 0; i < length; i++)
     {
@@ -44,25 +44,39 @@ uint8_t * hex_to_bytes(char * hex)
         bytes[i] = temp;
         prev = i;
     }
-
-    printf("Length of string: %ld\n", strlen(hex));
-    printf("Length of array:  %d\n", length);
-    printf("Hex string: %s\n", hex);
-    printf("Byte array: ");
+    */
+    char one_byte[] = {0, 0, 0};
     for (int i = 0; i < length; i++)
     {
-        printf("%x", bytes[i]);
+        one_byte[0] = hex[(i*2)];
+        one_byte[1] = hex[(i*2)+1];
+        bytes[i] = strtol(one_byte, NULL, 16);
+        // check strtol for error...
+    }
+
+    //printf("Length of string: %ld\n", strlen(hex));
+    //printf("Length of array:  %d\n", length);
+    //printf("Hex string: %s\n", hex);
+    //printf("Byte array: ");
+    for (int i = 0; i < length; i++)
+    {
+        printf("%02x", bytes[i]);
     }
     printf("\n");
 
     return bytes;
 }
 
-uint8_t * hex_to_base64(uint8_t * hex, size_t length)
+uint8_t * hex_to_base64(uint8_t * hex)
 {
     char base64_lookup[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     //char padding = '=';
     // Overhead is add'l 33-37% the size of original binary data (Wikipedia)
+   
+    size_t length = strlen(hex); 
+    uint8_t * hex_as_bytes = malloc(length/2);
+    hex_as_bytes = hex_to_bytes(hex);
+
     size_t output_size = length + (length * 4)/10;
 
     uint8_t * base64 = calloc(output_size, sizeof(uint8_t));
@@ -73,7 +87,7 @@ uint8_t * hex_to_base64(uint8_t * hex, size_t length)
     uint8_t output_index = 0;
     for (size_t i = 0; i < length; i++)
     {
-        uint8_t current_byte = hex[i];
+        uint8_t current_byte = hex_as_bytes[i]; // was hex
         if (0 == bits_used)
         {
             // Use the high order six bits
@@ -110,6 +124,8 @@ uint8_t * hex_to_base64(uint8_t * hex, size_t length)
         }
 
     }
+
+    free(hex_as_bytes);
 
     return base64;
 }
