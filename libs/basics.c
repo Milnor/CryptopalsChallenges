@@ -90,19 +90,37 @@ uint8_t * hex_to_base64(uint8_t * hex)
         uint8_t current_byte = hex_as_bytes[i]; // was hex
         if (0 == bits_used)
         {
-            // Use the high order six bits
+            // Use the high order six bits, store 2 leftover bits
             value = current_byte >> 2;
             base64[output_index++] = base64_lookup[value];
             bits_used = 6;
             leftover_bits = (0b00000011 & current_byte) << 4;
+
+            if ((length / 2) - 1 == i)
+            {
+                // end of input, remaining bits all 0
+                base64[output_index++] = base64_lookup[leftover_bits];
+                bits_used = 0;
+                leftover_bits = 0;
+            }
+
         }
         else if (6 == bits_used)
         {
-            // Combine leftovers with new current_byte
+            // Combine 2 leftover bits with new current_byte, store 4 leftovers
             value = leftover_bits + (current_byte >> 4);
             base64[output_index++] = base64_lookup[value];
             bits_used = 4;
             leftover_bits = (0b00001111 & current_byte) << 2;
+
+            if ((length / 2) - 1 == i)
+            {
+                // end of input, remaining bits all 0
+                base64[output_index++] = base64_lookup[leftover_bits];
+                bits_used = 0;
+                leftover_bits = 0;
+            } 
+
         }
         else if (4 == bits_used)
         {
