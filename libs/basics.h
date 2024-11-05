@@ -4,6 +4,11 @@
 #include <stdint.h>
 
 /*
+ * Convert byte array to string of hex digits.
+ */
+uint8_t * bytes_to_hex(uint8_t * bytes, size_t length); 
+
+/*
  * Convert a string of hex digits to a byte array.
  */
 uint8_t * hex_to_bytes(char * hex);

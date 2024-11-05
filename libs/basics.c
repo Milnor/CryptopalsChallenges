@@ -15,6 +15,25 @@ void print_bytes(uint8_t * data, size_t length)
     printf("\n");
 }
 
+uint8_t * bytes_to_hex(uint8_t * bytes, size_t length)
+{
+    size_t hex_string_len = length * 2 + 1;
+    uint8_t * output = malloc(hex_string_len);
+
+    for (int i = 0; i < hex_string_len; i++)
+    {
+        int ret =  sprintf(output+(i*2), "%02x", bytes[i]);
+        if (2 != ret)
+        {
+            fprintf(stderr, "[-] sprintf() failed, ret=%d\n", ret);
+        }
+    }
+
+    output[hex_string_len - 1] = 0;
+
+    return output;
+}
+
 uint8_t * hex_to_bytes(char * hex)
 {
     if (strlen(hex) % 2 != 0)
@@ -176,9 +195,12 @@ uint8_t * fixed_xor(char * input, char * key)
         output[i] = input_as_bytes[i] ^ key_as_bytes[i];
     }
 
-    free(input_as_bytes);
-    free(key_as_bytes);
 
-    return output;    
+    uint8_t * output_as_hex = bytes_to_hex(output, length);
+    //free(input_as_bytes);
+    //free(key_as_bytes);
+    //free(output);
+
+    return output_as_hex;    
 }
 
