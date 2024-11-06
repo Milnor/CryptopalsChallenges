@@ -81,5 +81,10 @@ int main()
                       "686974207468652062756c6c277320657965",
                       fixed_xor);
 
+    /* 1.3 Single-byte XOR cipher */
+    char * ciphertext = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
+    
+    // TODO: now that it works, decide how best to test/demonstrate it...
+    crack_single_byte_xor(ciphertext);
 }
 

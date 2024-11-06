@@ -13,6 +13,10 @@ uint8_t * bytes_to_hex(uint8_t * bytes, size_t length);
  */
 uint8_t * hex_to_bytes(char * hex);
 
+/*
+ * Estimate likelihood that a byte array is English when read as ASCII.
+ */
+int is_english(const char * ascii, size_t length);
 
 /*
  * Helper function for debug printing that is currently unused.
@@ -28,6 +32,11 @@ uint8_t * hex_to_base64(uint8_t * hex);
  * 1.2 Fixed XOR.
  */
 uint8_t * fixed_xor(char * input, char * key);
+
+/*
+ * 1.3 Single-byte XOR cipher
+ */
+uint8_t crack_single_byte_xor(char * ciphertext);
 
 #endif
 

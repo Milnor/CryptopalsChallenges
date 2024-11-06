@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -20,7 +21,7 @@ uint8_t * bytes_to_hex(uint8_t * bytes, size_t length)
     size_t hex_string_len = length * 2 + 1;
     uint8_t * output = malloc(hex_string_len);
 
-    for (int i = 0; i < hex_string_len; i++)
+    for (size_t i = 0; i < hex_string_len; i++)
     {
         int ret =  sprintf(output+(i*2), "%02x", bytes[i]);
         if (2 != ret)
@@ -44,27 +45,8 @@ uint8_t * hex_to_bytes(char * hex)
 
     int length = strlen(hex) / 2;
     uint8_t * bytes = malloc(length);
-    /*
-    int prev = -1;
-    for (int i = 0; i < length; i++)
-    {
-        if (prev == i)                 // This check is never triggered,                 
-        {                              // but when I remove it, i
-            printf("i got stuck!\n");  // gets stuck at 1 and there is
-            exit(1);                   // an infinite loop.
-        }
-        //printf("i = %d, length = %d, hex[] = %02X\n", i, length, hex+(i*2));
-        uint8_t temp = 0;
-        if (1 > sscanf(hex+(i*2), "%2X", (unsigned int *)&temp))
-        {
-            fprintf(stderr, "[-] sscanf() failed to match\n");
-            exit(1);
-        }
-        bytes[i] = temp;
-        prev = i;
-    }
-    */
     char one_byte[] = {0, 0, 0};
+
     for (int i = 0; i < length; i++)
     {
         one_byte[0] = hex[(i*2)];
@@ -73,18 +55,125 @@ uint8_t * hex_to_bytes(char * hex)
         // check strtol for error...
     }
 
-    //printf("Length of string: %ld\n", strlen(hex));
-    //printf("Length of array:  %d\n", length);
-    //printf("Hex string: %s\n", hex);
-    //printf("Byte array: ");
-    //for (int i = 0; i < length; i++)
-    //{
-    //    printf("%02x", bytes[i]);
-    //}
-    //printf("\n");
-
     return bytes;
 }
+
+int is_english(const char * ascii, size_t length)
+{
+    // Arbitrary heuristics that seem reasonable to me
+    int certainty = 0;
+    int vowels_lower = 0;
+    int vowels_upper = 0;
+    int consonants_lower = 0;
+    int consonants_upper = 0;
+    int letters = 0;
+    int punctuation = 0;
+    int digits = 0;
+    int spaces = 0;
+    int misc = 0;
+    
+    for (size_t i = 0; i < length; i++)
+    {
+        char current = ascii[i];
+        if (isupper(current))
+        {
+            switch (current)
+            {
+                case 'A':
+                case 'E':
+                case 'I':
+                case 'O':
+                case 'U':
+                    vowels_upper++;
+                    break;
+                default:
+                    consonants_upper++;
+            }
+        }
+        else if (islower(current))
+        {
+            switch (current)
+            {
+                case 'a':
+                case 'e':
+                case 'i':
+                case 'o':
+                case 'u':
+                    vowels_lower++;
+                    break;
+                default:
+                    consonants_lower++;
+            }
+        }
+        else if (isdigit(current))
+        {
+            digits++;
+        }
+        else if (ispunct(current))
+        {
+            punctuation++;
+        }
+        else if (isspace(current))
+        {
+            spaces++;
+        }
+        else
+        {
+            misc++;
+        }
+    }
+
+    letters = vowels_lower + vowels_upper + consonants_lower + consonants_upper;
+
+    // Non-standard capitalization lowers the likelihood but isn't
+    // weighted highly
+    if (consonants_upper < consonants_lower)
+    {
+        certainty += 5;
+    }
+    if (vowels_upper < vowels_lower)
+    {
+        certainty += 5;
+    }
+
+    // Non-standard spacing also lowers likelihood, but is possible
+    // (A more sophisticated heuristic would check distance between spaces)
+    if ((spaces * 5) < length)
+    {
+        certainty += 20;
+    }
+    if (spaces > (length / 12))
+    {
+        certainty += 15;
+    }
+
+    // Should not expect excessive punctuation
+    if ((punctuation * 3) < letters)
+    {
+        certainty += 8;
+    }
+
+    // Or too little punctuation
+    if (punctuation > (length / 30))
+    {
+        certainty += 8;
+    }    
+
+    // Not too many digits
+    if (digits < (length / 5))
+    {
+        certainty += 5;
+    }
+
+
+    // Not too many miscellaneous
+    if (misc < (length / 20))
+    {
+        certainty += 5;
+    }
+
+    return certainty;
+} 
 
 uint8_t * hex_to_base64(uint8_t * hex)
 {
@@ -202,5 +291,38 @@ uint8_t * fixed_xor(char * input, char * key)
     //free(output);
 
     return output_as_hex;    
+}
+
+uint8_t crack_single_byte_xor(char * ciphertext)
+{
+    size_t length = strlen(ciphertext) / 2;
+    uint8_t * bytes = hex_to_bytes(ciphertext);
+    uint8_t * temp = malloc(length);    
+
+    int best_score = -1;
+    int best_key = -1;
+
+    // Assume for now key is in printable range 0x20 ' ' to 0x7E '~'
+    for (uint8_t key = ' '; key <= '~'; key++)
+    {
+        for (int i = 0; i < length; i++)
+        {
+            temp[i] = bytes[i] ^ key;
+        }
+        int current_score = is_english(temp, length);
+        if (current_score > best_score)
+        {
+            best_score = current_score;
+            best_key = key;
+        }
+
+    }
+
+    printf("Best key seen was %c\n", best_key);
+
+    free(temp);
+    free(bytes);
+
+    return 0x00;
 }
 
