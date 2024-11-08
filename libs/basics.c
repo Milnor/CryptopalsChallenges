@@ -1,10 +1,16 @@
 #include <ctype.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "basics.h"
+
+#define MAX_BUFFER  256
 
 void print_bytes(uint8_t * data, size_t length)
 {
@@ -293,7 +299,7 @@ uint8_t * fixed_xor(char * input, char * key)
     return output_as_hex;    
 }
 
-uint8_t crack_single_byte_xor(char * ciphertext)
+uint8_t crack_single_byte_xor(char * ciphertext, char * k)
 {
     size_t length = strlen(ciphertext) / 2;
     uint8_t * bytes = hex_to_bytes(ciphertext);
@@ -318,11 +324,57 @@ uint8_t crack_single_byte_xor(char * ciphertext)
 
     }
 
-    printf("Best key seen was %c\n", best_key);
+    //printf("Best key seen was %c\n", best_key);
 
     free(temp);
     free(bytes);
 
-    return 0x00;
+    *k = best_key;
+
+    return best_score;
 }
 
+void detect_single_byte_xor(char * filepath)
+{
+    int fd = open(filepath, O_RDONLY);
+    if (-1 == fd)
+    {
+        fprintf(stderr, "[-] Can't open %s: %s\n", filepath, strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
+    int best_score = -1;
+    int best_key = -1;
+    char buffer[MAX_BUFFER];
+    char key = 0;
+    int i = 0;
+    int line_no = 0;
+    ssize_t count = -1;
+    do
+    {
+        count = read(fd, buffer+i, 1);
+        if (buffer[i] == '\n' || 0 == count)
+        {
+            buffer[i] = '\0';
+            uint8_t * bytes = hex_to_bytes(buffer);
+            int current_score = crack_single_byte_xor(buffer, &key);
+            if (current_score > best_score)
+            {
+                best_score = current_score;
+                printf("line_no: %d, best_score: %d, key: %c\n", line_no, best_score, key);
+                printf("ciphertext: %s\n", buffer);
+                printf("plaintext: %s\n", fixed_xor(buffer, key));
+            }
+            i = -1;
+            free(bytes);
+        }
+        i++;
+        line_no++;
+    } while (count != 0);
+    
+    int rc = close(fd);
+    if (-1 == rc)
+    {
+        fprintf(stderr, "[-] Error closing %s: %s\n", filepath, strerror(errno));
+    }
+}

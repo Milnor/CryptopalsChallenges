@@ -5,7 +5,13 @@
 
 #include "../libs/basics.h"
 
-// Test function that takes 1 string as input
+/** 
+ * @brief Test function that takes 1 string as input.
+ * @param name Description of current test.
+ * @param expected Correct output for test case.
+ * @param input1 Input passed to function under test.
+ * @param func Function being tested.
+ */
 void test_func_1param(const char * name, const char * expected, const char * input1, char * (*func)(char *))
 {
     char * output = func(input1);
@@ -25,7 +31,14 @@ void test_func_1param(const char * name, const char * expected, const char * inp
     free(output);
 }
 
-// Test function that takes 2 strings as inputs
+/**
+ * @brief Test function that takes 2 strings as inputs.
+ * @param name Description of current test.
+ * @param expected Correct output for test case.
+ * @param input1 First input passed to function under test.
+ * @param input2 Second input passed to function under test.
+ * @param func Function being tested.
+ */
 void test_func_2params(const char * name, const char * expected, const char * input1, const char * input2, char * (*func)(char *, char *))
 {
     char * output = func(input1, input2);
@@ -45,6 +58,9 @@ void test_func_2params(const char * name, const char * expected, const char * in
     free(output);
 }
 
+/**
+ * @brief Test correctness of functions solving Set 1 Challenges.
+ */
 int main()
 {
     printf("New test function...\n");
@@ -85,6 +101,12 @@ int main()
     char * ciphertext = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
     
     // TODO: now that it works, decide how best to test/demonstrate it...
-    crack_single_byte_xor(ciphertext);
+    char key = '\0';
+    uint8_t score = crack_single_byte_xor(ciphertext, &key);
+    printf("[+] Best key was %c with a score of %d\n", key, score);
+
+    /* 1.4 Detect single-character XOR */
+    detect_single_byte_xor("data/detect_single_xor.txt");
+
 }
 
