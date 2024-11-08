@@ -74,6 +74,7 @@ int is_english(const unsigned char * ascii, ssize_t length)
 {
     // Arbitrary heuristics that seem reasonable to me
     int certainty = 0;
+    int nonprintable = 0;
     int vowels_lower = 0;
     int vowels_upper = 0;
     int consonants_lower = 0;
@@ -86,8 +87,12 @@ int is_english(const unsigned char * ascii, ssize_t length)
     
     for (ssize_t i = 0; i < length; i++)
     {
-        char current = (char) ascii[i];
-        if (isupper(current))
+        char current = ascii[i];
+        if (!isprint(current))
+        {
+            nonprintable++;
+        }
+        else if (isupper(current))
         {
             switch (current)
             {
@@ -184,6 +189,16 @@ int is_english(const unsigned char * ascii, ssize_t length)
         certainty += 5;
     }
 
+    if (nonprintable > (length / 10))
+    {
+        certainty -= 35;
+    }
+
+    if (certainty < 0)
+    {
+        certainty = 0;
+    }
+
     return certainty;
 } 
 
@@ -270,6 +285,10 @@ char * hex_to_base64(const char * hex)
         input_len++;
     }
 
+    // TODO: move this to debug print or verbose print
+    printf("\t%.48s (%.48s)\n", hex, hex_as_bytes);
+    printf("\t ==> %.48s\n", base64);
+
     free(hex_as_bytes);
 
     return base64;
@@ -297,6 +316,13 @@ char * fixed_xor(const char * input, const char * key)
 
 
     char * output_as_hex = bytes_to_hex(output, length);
+
+    // TODO: Move to debug print or verbose print
+    printf("\t%.48s (%.48s)\n", input, input_as_bytes);
+    printf("\t%.48s (%.48s)\n", key, key_as_bytes);
+    printf("\t---------XOR---------------\n");
+    printf("\t%.48s (%.48s)\n", output_as_hex, output);
+
     free(input_as_bytes); 
     free(key_as_bytes);   
     free(output);
@@ -304,7 +330,7 @@ char * fixed_xor(const char * input, const char * key)
     return output_as_hex;    
 }
 
-uint8_t crack_single_byte_xor(char * ciphertext, char * k)
+uint8_t crack_single_byte_xor(char * ciphertext, char * k, char * plaintext)
 {
     ssize_t length = strlen(ciphertext) / 2;
     uint8_t * bytes = hex_to_bytes(ciphertext);
@@ -320,16 +346,18 @@ uint8_t crack_single_byte_xor(char * ciphertext, char * k)
         {
             temp[i] = bytes[i] ^ key;
         }
+
         int current_score = is_english(temp, length);
+        //printf("   Score: %d  key: %c, plaintext:%s\n", current_score, key, temp);
         if (current_score > best_score)
         {
+            memcpy(plaintext, temp, length);
             best_score = current_score;
             best_key = key;
+            
         }
 
     }
-
-    //printf("Best key seen was %c\n", best_key);
 
     free(temp);
     free(bytes);
@@ -349,8 +377,10 @@ void detect_single_byte_xor(char * filepath)
     }
 
     int best_score = -1;
-    //int best_key = -1;
+    int best_key = -1;
     char buffer[MAX_BUFFER];
+    char current_msg[MAX_BUFFER];
+    char secret[MAX_BUFFER];
     char key = 0;
     int i = 0;
     int line_no = 0;
@@ -358,25 +388,33 @@ void detect_single_byte_xor(char * filepath)
     do
     {
         count = read(fd, buffer+i, 1);
-        if (buffer[i] == '\n' || 0 == count)
+        if (0x0a == buffer[i] || 0 == count)
         {
             buffer[i] = '\0';
+            //printf("[!] Analyzing i=%d, line %d: %s\n", i, line_no, buffer);
             uint8_t * bytes = hex_to_bytes(buffer);
-            int current_score = crack_single_byte_xor(buffer, &key);
+            int current_score = crack_single_byte_xor(buffer, &key, current_msg);
             if (current_score > best_score)
             {
                 best_score = current_score;
-                printf("line_no: %d, best_score: %d, key: %c\n", line_no, best_score, key);
-                printf("ciphertext: %s\n", buffer);
-                // fixed_xor() XOR's two buffers, not key against buffer
-                //printf("plaintext: %s\n", fixed_xor(buffer, key));
+                best_key = key;
+                memset(secret, '\0', sizeof(secret));
+                memcpy(secret, current_msg, i);
+                //printf("line_no: %d, best_score: %d, key: %c\n", line_no, best_score, best_key);
+                //printf("ciphertext: %s\n", secret);
             }
             i = -1;
             free(bytes);
+            line_no++;
+            //if (line_no > 0)
+            //{
+            //    exit(EXIT_SUCCESS);
+            //}
         }
         i++;
-        line_no++;
-    } while (count != 0);
+    } while (count > 0);
+
+    printf("Key: %c, Hidden message: %s\n", best_key, secret);
     
     int rc = close(fd);
     if (-1 == rc)

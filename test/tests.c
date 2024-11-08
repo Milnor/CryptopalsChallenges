@@ -101,9 +101,10 @@ int main()
     char * ciphertext = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
     
     // TODO: now that it works, decide how best to test/demonstrate it...
+    char secret[256];
     char key = '\0';
-    uint8_t score = crack_single_byte_xor(ciphertext, &key);
-    printf("[+] Best key was %c with a score of %d\n", key, score);
+    uint8_t score = crack_single_byte_xor(ciphertext, &key, secret);
+    printf("[+] Key: %c, Score: %d, Message: %s\n", key, score, secret);
 
     /* 1.4 Detect single-character XOR */
     detect_single_byte_xor("data/detect_single_xor.txt");

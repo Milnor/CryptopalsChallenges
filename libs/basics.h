@@ -51,10 +51,11 @@ char * fixed_xor(const char * input, const char * key);
 /**
  * @brief 1.3 Single-byte XOR cipher, find the one byte key that produces the best plaintext.
  * @param ciphertext Hex string encoded with single-byte XOR.
- * @param k Storage for key estimated to produce the best plaintext.
+ * @param k Storage for single char key estimated to produce the best plaintext.
+ * @param plaintext Storage for string estimated to be best decoded plaintext.
  * @return Score (certainty plaintext is valid) in the range 0-100.
  */
-uint8_t crack_single_byte_xor(char * ciphertext, char * k);
+uint8_t crack_single_byte_xor(char * ciphertext, char * k, char * plaintext);
 
 /**
  * @brief 1.4 Detect single-character XOR.
