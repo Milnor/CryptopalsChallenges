@@ -16,7 +16,7 @@ char * bytes_to_hex(uint8_t * bytes, size_t length);
  * @param hex String of hex digits to convert.
  * @return Byte array.
  */
-uint8_t * hex_to_bytes(char * hex);
+uint8_t * hex_to_bytes(const char * hex);
 
 /**
  * @brief Estimate likelihood that a byte array is English when read as ASCII.
@@ -24,7 +24,7 @@ uint8_t * hex_to_bytes(char * hex);
  * @param length Size in bytes, since data is not assumed to be NULL-terminated.
  * @return Score of likelihood this is the valid plaintext, 0-100.
  */
-int is_english(const char * ascii, size_t length);
+int is_english(const unsigned char * ascii, ssize_t length);
 
 /**
  * @brief Helper function for debug printing.
@@ -38,7 +38,7 @@ void print_bytes(uint8_t * data, size_t length);
  * @param hex A string of hex digits.
  * @return A base64 encoded string.
  */
-char * hex_to_base64(char * hex);
+char * hex_to_base64(const char * hex);
 
 /**
  * @brief 1.2 Fixed XOR, apply a single character key to every byte of input.
@@ -46,7 +46,7 @@ char * hex_to_base64(char * hex);
  * @param key A one-byte value that will be XOR'd against every input byte.
  * @return A hex encoded string with the XOR operation applied to each byte. 
  */
-char * fixed_xor(char * input, char * key);
+char * fixed_xor(const char * input, const char * key);
 
 /**
  * @brief 1.3 Single-byte XOR cipher, find the one byte key that produces the best plaintext.

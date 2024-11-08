@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 #include "basics.h"
 
@@ -22,10 +23,10 @@ void print_bytes(uint8_t * data, size_t length)
     printf("\n");
 }
 
-uint8_t * bytes_to_hex(uint8_t * bytes, size_t length)
+char * bytes_to_hex(uint8_t * bytes, size_t length)
 {
     size_t hex_string_len = length * 2 + 1;
-    uint8_t * output = malloc(hex_string_len);
+    char * output = malloc(hex_string_len);
 
     for (size_t i = 0; i < hex_string_len; i++)
     {
@@ -41,7 +42,7 @@ uint8_t * bytes_to_hex(uint8_t * bytes, size_t length)
     return output;
 }
 
-uint8_t * hex_to_bytes(char * hex)
+uint8_t * hex_to_bytes(const char * hex)
 {
     if (strlen(hex) % 2 != 0)
     {
@@ -64,7 +65,7 @@ uint8_t * hex_to_bytes(char * hex)
     return bytes;
 }
 
-int is_english(const char * ascii, size_t length)
+int is_english(const unsigned char * ascii, ssize_t length)
 {
     // Arbitrary heuristics that seem reasonable to me
     int certainty = 0;
@@ -78,9 +79,9 @@ int is_english(const char * ascii, size_t length)
     int spaces = 0;
     int misc = 0;
     
-    for (size_t i = 0; i < length; i++)
+    for (ssize_t i = 0; i < length; i++)
     {
-        char current = ascii[i];
+        char current = (char) ascii[i];
         if (isupper(current))
         {
             switch (current)
@@ -181,19 +182,18 @@ int is_english(const char * ascii, size_t length)
     return certainty;
 } 
 
-uint8_t * hex_to_base64(uint8_t * hex)
+char * hex_to_base64(const char * hex)
 {
     char base64_lookup[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstu"
                              "vwxyz0123456789+/";
    
     size_t length = strlen(hex); 
-    uint8_t * hex_as_bytes = malloc(length/2);
-    hex_as_bytes = hex_to_bytes(hex);
+    uint8_t * hex_as_bytes = hex_to_bytes(hex);
 
     // Overhead is add'l 33-37% the size of original binary data (Wikipedia)
     size_t output_size = length + (length * 4)/10;
 
-    uint8_t * base64 = calloc(output_size, sizeof(uint8_t));
+    char * base64 = calloc(output_size, sizeof(uint8_t));
 
     uint8_t value = 0; // numeric value of hextet
     uint8_t bits_used = 0;
@@ -271,7 +271,7 @@ uint8_t * hex_to_base64(uint8_t * hex)
 }
 
 
-uint8_t * fixed_xor(char * input, char * key)
+char * fixed_xor(const char * input, const char * key)
 {
     if (strlen(input) != strlen(key))
     {
@@ -291,17 +291,17 @@ uint8_t * fixed_xor(char * input, char * key)
     }
 
 
-    uint8_t * output_as_hex = bytes_to_hex(output, length);
-    //free(input_as_bytes);
-    //free(key_as_bytes);
-    //free(output);
+    char * output_as_hex = bytes_to_hex(output, length);
+    //free(input_as_bytes); TODO: uncover the double-free
+    //free(key_as_bytes);         that is hiding in here.
+    free(output);
 
     return output_as_hex;    
 }
 
 uint8_t crack_single_byte_xor(char * ciphertext, char * k)
 {
-    size_t length = strlen(ciphertext) / 2;
+    ssize_t length = strlen(ciphertext) / 2;
     uint8_t * bytes = hex_to_bytes(ciphertext);
     uint8_t * temp = malloc(length);    
 
@@ -344,7 +344,7 @@ void detect_single_byte_xor(char * filepath)
     }
 
     int best_score = -1;
-    int best_key = -1;
+    //int best_key = -1;
     char buffer[MAX_BUFFER];
     char key = 0;
     int i = 0;
@@ -363,7 +363,8 @@ void detect_single_byte_xor(char * filepath)
                 best_score = current_score;
                 printf("line_no: %d, best_score: %d, key: %c\n", line_no, best_score, key);
                 printf("ciphertext: %s\n", buffer);
-                printf("plaintext: %s\n", fixed_xor(buffer, key));
+                // fixed_xor() XOR's two buffers, not key against buffer
+                //printf("plaintext: %s\n", fixed_xor(buffer, key));
             }
             i = -1;
             free(bytes);

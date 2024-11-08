@@ -12,7 +12,7 @@
  * @param input1 Input passed to function under test.
  * @param func Function being tested.
  */
-void test_func_1param(const char * name, const char * expected, const char * input1, char * (*func)(char *))
+void test_func_1param(const char * name, const char * expected, const char * input1, char * (*func)(const char *))
 {
     char * output = func(input1);
     
@@ -39,7 +39,7 @@ void test_func_1param(const char * name, const char * expected, const char * inp
  * @param input2 Second input passed to function under test.
  * @param func Function being tested.
  */
-void test_func_2params(const char * name, const char * expected, const char * input1, const char * input2, char * (*func)(char *, char *))
+void test_func_2params(const char * name, const char * expected, const char * input1, const char * input2, char * (*func)(const char *, const char *))
 {
     char * output = func(input1, input2);
     
