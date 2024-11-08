@@ -28,7 +28,7 @@ char * bytes_to_hex(uint8_t * bytes, size_t length)
     size_t hex_string_len = length * 2 + 1;
     char * output = malloc(hex_string_len);
 
-    for (size_t i = 0; i < hex_string_len; i++)
+    for (size_t i = 0; i < length; i++)
     {
         int ret =  sprintf(output+(i*2), "%02x", bytes[i]);
         if (2 != ret)
