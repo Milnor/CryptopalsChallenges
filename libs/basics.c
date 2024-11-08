@@ -58,8 +58,13 @@ uint8_t * hex_to_bytes(const char * hex)
     {
         one_byte[0] = hex[(i*2)];
         one_byte[1] = hex[(i*2)+1];
+        errno = 0;
         bytes[i] = strtol(one_byte, NULL, 16);
-        // check strtol for error...
+        if (errno)
+        {
+            fprintf(stderr, "[-] strtol() error: %s\n", strerror(errno));
+            exit(EXIT_FAILURE);
+        }
     }
 
     return bytes;
@@ -292,8 +297,8 @@ char * fixed_xor(const char * input, const char * key)
 
 
     char * output_as_hex = bytes_to_hex(output, length);
-    //free(input_as_bytes); TODO: uncover the double-free
-    //free(key_as_bytes);         that is hiding in here.
+    free(input_as_bytes); 
+    free(key_as_bytes);   
     free(output);
 
     return output_as_hex;    

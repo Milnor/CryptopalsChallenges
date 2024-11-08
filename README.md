@@ -10,7 +10,6 @@ complete challenges from cryptopals.com in C
 * [ ] add code coverage to Makefile
 * [ ] add linting to Makefile
 * [x] Set 1 Challenge 3 looks fun
-* [ ] lots of compiler warnings and valgrind errors to fix
-    - in progress, got all compiler warnings and one memory leak
+* [x] lots of compiler warnings and valgrind errors to fix
 * [ ] Set 1 Challenge 4
     - in progress, not working yet 
