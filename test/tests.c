@@ -109,5 +109,16 @@ int main()
     /* 1.4 Detect single-character XOR */
     detect_single_byte_xor("data/detect_single_xor.txt");
 
+    /* 1.5 Implement repeating-key XOR */
+    
+    test_func_2params("Repeating-key XOR",
+                      "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d6334"
+                      "3c2a26226324272765272a282b2f20430a652e2c652a3124333a65"
+                      "3e2b2027630c692b20283165286326302e27282f",
+                      "Burning 'em, if you ain't quick and nimble\n"
+                      "I go crazy when I hear a cymbal",
+                      "ICE",
+                      repeating_xor);
+
 }
 

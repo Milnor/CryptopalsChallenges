@@ -15,7 +15,7 @@ complete challenges from cryptopals.com in C
 * [ ] add debug print macro or --verbose option
     - show off the flags/Easter eggs encoded in the sample data
 * [x] Set 1 Challenge 4
-* [ ] Set 1 Challenge 5
+* [x] Set 1 Challenge 5
 * [ ] Set 1 Challenge 6
 * [ ] Set 1 Challenge 7
 * [ ] Set 1 Challenge 8

@@ -63,5 +63,13 @@ uint8_t crack_single_byte_xor(char * ciphertext, char * k, char * plaintext);
  */
 void detect_single_byte_xor(char * filepath);
 
+/**
+ * @brief 1.5 Implement repeating-key XOR.
+ * @param input Plaintext to encrypt.
+ * @param key Encryption key of arbitrary length.
+ * @return The input incrypted with the key.
+ */
+char * repeating_xor(const char * input, const char * key);
+
 #endif
 

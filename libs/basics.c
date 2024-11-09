@@ -422,3 +422,29 @@ void detect_single_byte_xor(char * filepath)
         fprintf(stderr, "[-] Error closing %s: %s\n", filepath, strerror(errno));
     }
 }
+
+char * repeating_xor(const char * input, const char * key)
+{
+    size_t length = strlen(input);
+    size_t key_length = strlen(key);
+
+    uint8_t * output = malloc(length + 1);
+
+    for (size_t i = 0; i < length; i++) 
+    {
+        output[i] = input[i] ^ key[i % key_length];
+    }
+
+    output[length] = '\0';
+
+    char * output_as_hex = bytes_to_hex(output, length);
+
+    // TODO: Move to debug print or verbose print
+    printf("\t%.48s\n", input);
+    printf("\t%.48s\n", key);
+    printf("\t---------XOR---------------\n");
+    printf("\t%.48s (%.48s)\n", output_as_hex, output);
+
+    return output_as_hex;
+}
+
