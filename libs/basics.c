@@ -448,3 +448,8 @@ char * repeating_xor(const char * input, const char * key)
     return output_as_hex;
 }
 
+void crack_repeating_xor(char * filepath)
+{
+    // TODO: we'll need base64 to bytes, just to get started.
+}
+

@@ -71,5 +71,11 @@ void detect_single_byte_xor(char * filepath);
  */
 char * repeating_xor(const char * input, const char * key);
 
+/**
+ * @brief 1.6 Break repeating-key XOR.
+ * @param File containing vigenere-encrypted text, encoded in base64.
+ */
+void crack_repeating_xor(char * filepath);
+
 #endif
 

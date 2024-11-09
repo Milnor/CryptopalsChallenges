@@ -120,5 +120,9 @@ int main()
                       "ICE",
                       repeating_xor);
 
+    /* 1.6 Break repeating-key XOR */
+
+    crack_repeating_xor("data/crack_vigenere.txt");
+
 }
 
