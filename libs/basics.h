@@ -34,6 +34,13 @@ int is_english(const unsigned char * ascii, ssize_t length);
 void print_bytes(uint8_t * data, size_t length);
 
 /**
+ * @brief Convert base64 to bytes.
+ * @param b64 A base64 encoded string.
+ * @return A byte array decoded from base64.
+ */
+uint8_t * base64_to_bytes(const char * b64);
+
+/**
  * @brief 1.1 Convert hex to base64.
  * @param hex A string of hex digits.
  * @return A base64 encoded string.

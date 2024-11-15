@@ -202,6 +202,40 @@ int is_english(const unsigned char * ascii, ssize_t length)
     return certainty;
 } 
 
+uint8_t * base64_to_bytes(const char * b64)
+{
+    // TODO: function or macro to calculate precise length
+    // every four characters of base64 will decode to three bytes,
+    // less if there is padding.
+
+    int size = 0;
+    int len = strlen(b64);
+    if (len % 4 != 0)
+    {
+        print("[-] Invalid length for base64: %d\n", len);
+    }
+
+    size = (len / 4) * 3;
+    if ('=' == b64[len - 1])
+    {
+        size--;
+    }
+    if ('=' == b64[len - 2])
+    {
+        size--;
+    }
+
+    uint8_t * bytes = malloc(size);
+
+    for (int i = 0; i < size / 4; i++)
+    {
+        uint32_t current_chunk = b64[i * 4];
+
+    }
+
+    return bytes; 
+}
+
 char * hex_to_base64(const char * hex)
 {
     char base64_lookup[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstu"
@@ -450,6 +484,63 @@ char * repeating_xor(const char * input, const char * key)
 
 void crack_repeating_xor(char * filepath)
 {
+    int fd = open(filepath, O_RDONLY);
+    if (-1 == fd)
+    {
+        fprintf(stderr, "[-] Can't open %s: %s\n", filepath, strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
+    off_t size = lseek(fd, 0, SEEK_END);
+    if (-1 == size)
+    {
+        fprintf(stderr, "[-] lseek() failed: %s\n", strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
+    printf("[!] size = %ld\n", size);
+    /* I'm opting for memory inefficiency over a separate read()
+       syscall on each individual byte. */
+    char * temp = malloc(size + 1);         // May contain newlines
+    char * raw_base64 = malloc(size + 1);   
+
+    // rewind
+    int ret = lseek(fd, 0, SEEK_SET);
+    if (-1 == ret)
+    {
+        fprintf(stderr, "[-] lseek() failed: %s\n", strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+    
+    ret = read(fd, temp, size);
+    if (-1 == ret)
+    {
+        fprintf(stderr, "[-] read() failed: %s\n", strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+    
+    ssize_t j = 0;
+    for (ssize_t i = 0; i < ret; i++)
+    {
+        // filter out newlines
+        if (isprint(temp[i]))
+        {
+            raw_base64[j++] = temp[i];
+        } 
+    }
+    raw_base64[j] = '\0';
+    printf("len of temp = %ld, len of raw_base64 = %ld\n", strlen(temp), strlen(raw_base64));
+    free(temp);
+
+    int rc = close(fd);
+    if (-1 == rc)
+    {
+        fprintf(stderr, "[-] Error closing %s: %s\n", filepath, strerror(errno));
+    }
+    //printf("raw_base64:\n%s\n", raw_base64);
+
+
     // TODO: we'll need base64 to bytes, just to get started.
+    uint8_t * bytes base64_to_bytes(raw_base64);  
 }
 

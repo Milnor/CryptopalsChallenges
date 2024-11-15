@@ -14,6 +14,7 @@ complete challenges from cryptopals.com in C
 * [x] lots of compiler warnings and valgrind errors to fix
 * [ ] add debug print macro or --verbose option
     - show off the flags/Easter eggs encoded in the sample data
+* [ ] refactor: add ERR\_PRINT macro
 * [x] Set 1 Challenge 4
 * [x] Set 1 Challenge 5
 * [ ] Set 1 Challenge 6

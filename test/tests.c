@@ -119,6 +119,7 @@ int main()
                       "I go crazy when I hear a cymbal",
                       "ICE",
                       repeating_xor);
+    //free(
 
     /* 1.6 Break repeating-key XOR */
 
