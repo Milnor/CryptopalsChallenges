@@ -202,6 +202,55 @@ int is_english(const unsigned char * ascii, ssize_t length)
     return certainty;
 } 
 
+uint8_t decode_b64_byte(uint8_t in)
+{
+    /*
+     * Upper
+     * A    0x41     65     ==>     000000   0
+     * Z    0x5A     90     ==>     011001  25
+     * Lower
+     * a    0x61     97     ==>     011010  26
+     * z    0x7A    122     ==>     110011  51
+     * Digit
+     * 0    0x30     48     ==>     110100  52
+     * 9    0x39     57     ==>     111101  61
+     * Misc
+     * +    0x2B     43     ==>     111110  62
+     * /    0x2F     47     ==>     111111  63
+     */
+
+    if (isupper(in))
+    {
+        return in - 65;
+    }
+    else if (islower(in))
+    {
+        // compiler can optimize this math
+        return in - 97 + 26;
+    }
+    else if (isdigit(in))
+    {
+        return in - 48 + 52;
+    }
+    else if ('+' == in)
+    {
+        return 62;
+    }
+    else if ('/' == in)
+    {
+        return 63;
+    }
+    else if ('=' == in)
+    {
+        return 0; // padding
+    }
+    else
+    {
+        fprintf(stderr, "[-] decode_b64_byte(%c) failed\n", in);
+        exit(EXIT_FAILURE);
+    }
+}
+
 uint8_t * base64_to_bytes(const char * b64)
 {
     // TODO: function or macro to calculate precise length
@@ -212,7 +261,7 @@ uint8_t * base64_to_bytes(const char * b64)
     int len = strlen(b64);
     if (len % 4 != 0)
     {
-        print("[-] Invalid length for base64: %d\n", len);
+        printf("[-] Invalid length for base64: %d\n", len);
     }
 
     size = (len / 4) * 3;
@@ -227,10 +276,33 @@ uint8_t * base64_to_bytes(const char * b64)
 
     uint8_t * bytes = malloc(size);
 
-    for (int i = 0; i < size / 4; i++)
+    // Convert each 4-byte chunk of Base64 into
+    // 3 bytes of decoded data
+    int j = 0;
+    for (int i = 0; i < size - 4; i++)
     {
-        uint32_t current_chunk = b64[i * 4];
+        
+        uint8_t one = decode_b64_byte(b64[i]);
+        uint8_t two = decode_b64_byte(b64[i + 1]);
+        uint8_t three = decode_b64_byte(b64[i + 2]);
+        uint8_t four = decode_b64_byte(b64[i + 3]);
 
+        // 6 and 2
+        bytes[j] = (one << 2) + (two >> 4);
+        if (j + 1 >= size)
+        {
+            break;
+        }
+        // 4 and 4
+        bytes[j + 1] = (two << 4) + (three >> 4);
+        if (j + 2 >= size)
+        {   
+            break;
+        }
+        // 2 and 6
+        bytes[j + 2] = (three << 4) + (four >> 6);
+
+        j += 3;
     }
 
     return bytes; 
@@ -541,6 +613,6 @@ void crack_repeating_xor(char * filepath)
 
 
     // TODO: we'll need base64 to bytes, just to get started.
-    uint8_t * bytes base64_to_bytes(raw_base64);  
+    uint8_t * bytes = base64_to_bytes(raw_base64);  
 }
 

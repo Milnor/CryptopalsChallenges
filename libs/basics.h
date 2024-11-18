@@ -34,6 +34,13 @@ int is_english(const unsigned char * ascii, ssize_t length);
 void print_bytes(uint8_t * data, size_t length);
 
 /**
+ * @brief Decode a single Base64 ASCII character to an integer.
+ * @param in A Base64 character.
+ * @return An integer, 0-63.
+ */
+uint8_t decode_b64_byte(uint8_t in);
+
+/**
  * @brief Convert base64 to bytes.
  * @param b64 A base64 encoded string.
  * @return A byte array decoded from base64.
