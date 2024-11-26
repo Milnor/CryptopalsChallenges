@@ -125,5 +125,29 @@ int main()
 
     crack_repeating_xor("data/crack_vigenere.txt");
 
+    // TODO: move to separate file for unit tests
+    // TODO: separate demo of solving challenges from unit testing
+/*
+    test_func_1param("Hex to base64",
+                     "Man",
+                     "TWFu",
+                     base64_to_bytes);
+*/
+
+    base64_to_bytes("TWFu");
+
+// had test of hex_to_base64 here
+/*
+    test_func_1param("Base64 to hex",
+                     "31323334",
+                     "MTIzNA==",
+                     base64_to_bytes);
+
+    test_func_1param("Base64 to hex",
+                     "31323334",
+                     "MTIzNA==",
+                     base64_to_bytes);
+*/
+    printf("Got here.\n");
 }
 

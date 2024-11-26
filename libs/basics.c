@@ -257,6 +257,8 @@ uint8_t * base64_to_bytes(const char * b64)
     // every four characters of base64 will decode to three bytes,
     // less if there is padding.
 
+    printf("base_64_to_bytes(%s)\n", b64);
+
     int size = 0;
     int len = strlen(b64);
     if (len % 4 != 0)
@@ -276,33 +278,47 @@ uint8_t * base64_to_bytes(const char * b64)
 
     uint8_t * bytes = malloc(size);
 
+    printf("size=%d\n", size);
+
     // Convert each 4-byte chunk of Base64 into
     // 3 bytes of decoded data
     int j = 0;
-    for (int i = 0; i < size - 4; i++)
+    for (int i = 0; (i * 4) < size; i++)
     {
-        
-        uint8_t one = decode_b64_byte(b64[i]);
-        uint8_t two = decode_b64_byte(b64[i + 1]);
-        uint8_t three = decode_b64_byte(b64[i + 2]);
-        uint8_t four = decode_b64_byte(b64[i + 3]);
+       printf("b64=%s, i=%d, j=%d, size=%d\n", b64, i, j, size);
+         
+        uint8_t one = decode_b64_byte(b64[i * 4]);
+        uint8_t two = decode_b64_byte(b64[i * 4 + 1]);
+        uint8_t three = decode_b64_byte(b64[i * 4 + 2]);
+        uint8_t four = decode_b64_byte(b64[i * 4 + 3]);
 
         // 6 and 2
-        bytes[j] = (one << 2) + (two >> 4);
+
+        printf("%08B + %08B\n", ((one << 2) & 0b11111100), ((two >> 4) & 0b00000011));
+        bytes[j] = ((one << 2) & 0b11111100) + ((two >> 4) & 0b00000011);
         if (j + 1 >= size)
         {
             break;
         }
         // 4 and 4
-        bytes[j + 1] = (two << 4) + (three >> 4);
+        printf("%08B + %08B\n", ((two << 4) & 0b11110000), ((three >> 2) & 0b00001111));
+        bytes[j + 1] = ((two << 4) & 0b11110000) + ((three >> 2) & 0b00001111);
         if (j + 2 >= size)
         {   
             break;
         }
         // 2 and 6
-        bytes[j + 2] = (three << 4) + (four >> 6);
+        printf("%08B + %08B\n", ((three << 6) & 0b11000000), ((four) & 0b00111111));
+        bytes[j + 2] = ((three << 6) & 0b11000000) + ((four) & 0b00111111);
 
         j += 3;
+
+        printf("%c%c%c%c ==> %06B %06B %06B %06B ==>  %c%c%c (%B %B %B)\n", 
+               b64[i*4], b64[i*4+1], b64[i*4+2], b64[i*4+3],
+               one, two, three, four,
+               bytes[j-3], bytes[j-2], bytes[j-1],
+               bytes[j-3], bytes[j-2], bytes[j-1]);
+
     }
 
     return bytes; 
