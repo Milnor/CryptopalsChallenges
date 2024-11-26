@@ -91,5 +91,13 @@ char * repeating_xor(const char * input, const char * key);
  */
 void crack_repeating_xor(char * filepath);
 
+/**
+ * @brief Calculate Hamming distance between two strings.
+ * @param one First string.
+ * @param two Second string (of same length).
+ * @return Number of bits that differ.
+ */
+int hamming_calc(const char * one, const char * two);
+
 #endif
 

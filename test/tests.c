@@ -148,6 +148,8 @@ int main()
                      "MTIzNA==",
                      base64_to_bytes);
 */
-    printf("Got here.\n");
+
+    int ham = hamming_calc("this is a test", "wokka wokka!!!");
+    printf("[!] hamming=%d; expected 37.\n", ham);
 }
 

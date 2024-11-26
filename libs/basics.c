@@ -12,6 +12,8 @@
 #include "basics.h"
 
 #define MAX_BUFFER  256
+#define KEY_MIN     2
+#define KEY_MAX     40
 
 void print_bytes(uint8_t * data, size_t length)
 {
@@ -630,5 +632,35 @@ void crack_repeating_xor(char * filepath)
 
     // TODO: we'll need base64 to bytes, just to get started.
     uint8_t * bytes = base64_to_bytes(raw_base64);  
+
+    for (int keysize = KEY_MIN; keysize <= KEY_MAX; keysize++)
+    {
+        // resume work here.
+    }
+
 }
 
+// Bitwise XOR, then count the 1's.
+int hamming_calc(const char * one, const char * two)
+{
+    size_t len = strlen(one);
+    if (strlen(two) != len)
+    {
+        fprintf(stderr, "[-] hamming_calc() requires strings of same length.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    int count = 0;
+
+    for (size_t i = 0; i < len; i++)
+    {
+        char temp = one[i] ^ two[i];
+        while (temp)
+        {
+            count += temp & 1;
+            temp >>= 1;
+        }
+    }
+
+    return count;
+}
