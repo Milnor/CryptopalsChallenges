@@ -10,11 +10,15 @@ complete challenges from cryptopals.com in C
 * [ ] add code coverage to Makefile
 * [ ] add linting to Makefile
 * [ ] diagnose problem with Doxygen output
+* Friend's suggestions:
+    - [ ] ASAN in lieu of valgrind
+    - [ ] clang-analyzer as a free alternative to Coverity
 * [x] Set 1 Challenge 3 looks fun
 * [x] lots of compiler warnings and valgrind errors to fix
 * [ ] add debug print macro or --verbose option
     - show off the flags/Easter eggs encoded in the sample data
 * [ ] refactor: add ERR\_PRINT macro
+* [ ] separate challenge solver from unit tests
 * [x] Set 1 Challenge 4
 * [x] Set 1 Challenge 5
 * [ ] Set 1 Challenge 6
