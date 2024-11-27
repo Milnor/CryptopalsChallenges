@@ -4,78 +4,17 @@
 #include <string.h>
 
 #include "../libs/basics.h"
-
-/** 
- * @brief Test function that takes 1 string as input.
- * @param name Description of current test.
- * @param expected Correct output for test case.
- * @param input1 Input passed to function under test.
- * @param func Function being tested.
- */
-void test_func_1param(const char * name, const char * expected, const char * input1, char * (*func)(const char *))
-{
-    char * output = func(input1);
-    
-    if (strncmp(output, expected, strlen(expected)))
-    {
-        fprintf(stderr, " [-] %s test failed:\n"
-                        "  Expected: %s\n"
-                        "  Actual: %s\n",
-                        name, expected, output);
-    }
-    else
-    {
-        printf(" [+] %s test passed\n", name);
-    }
-
-    free(output);
-}
+#include "../libs/testing.h"
 
 /**
- * @brief Test function that takes 2 strings as inputs.
- * @param name Description of current test.
- * @param expected Correct output for test case.
- * @param input1 First input passed to function under test.
- * @param input2 Second input passed to function under test.
- * @param func Function being tested.
- */
-void test_func_2params(const char * name, const char * expected, const char * input1, const char * input2, char * (*func)(const char *, const char *))
-{
-    char * output = func(input1, input2);
-    
-    if (strncmp(output, expected, strlen(expected)))
-    {
-        fprintf(stderr, " [-] %s test failed:\n"
-                        "  Expected: %s\n"
-                        "  Actual: %s\n",
-                        name, expected, output);
-    }
-    else
-    {
-        printf(" [+] %s test passed\n", name);
-    }
-
-    free(output);
-}
-
-/**
- * @brief Test correctness of functions solving Set 1 Challenges.
+ * @brief Test correctness of individual functions.
  */
 int main()
 {
-    printf("New test function...\n");
+
 
     /* 1.1 Convert hex to base64 */
 
-    // No padding example from https://cryptopals.com/sets/1/challenges/1
-    test_func_1param("Hex string to base64 - no pad",
-                     "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29u"  
-                     "b3VzIG11c2hyb29t",
-                     "49276d206b696c6c696e6720796f757220627261696e206c6"  
-                     "96b65206120706f69736f6e6f7573206d757368726f6f6d",
-                     hex_to_base64);
-
-    
     // Examples with padding from https://en.wikipedia.org/wiki/Base64
     test_func_1param("Hex string to base64 - 1 pad",
                      "bGlnaHQgd29yay4=",
@@ -119,7 +58,6 @@ int main()
                       "I go crazy when I hear a cymbal",
                       "ICE",
                       repeating_xor);
-    //free(
 
     /* 1.6 Break repeating-key XOR */
 

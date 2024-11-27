@@ -55,3 +55,6 @@ dkms.conf
 # Doxygen generated files
 html/*
 latex/*
+
+# ctags
+tags

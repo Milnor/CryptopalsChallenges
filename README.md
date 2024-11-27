@@ -18,7 +18,7 @@ complete challenges from cryptopals.com in C
 * [ ] add debug print macro or --verbose option
     - show off the flags/Easter eggs encoded in the sample data
 * [ ] refactor: add ERR\_PRINT macro
-* [ ] separate challenge solver from unit tests
+* [x] separate challenge solver from unit tests
 * [x] Set 1 Challenge 4
 * [x] Set 1 Challenge 5
 * [ ] Set 1 Challenge 6
@@ -34,3 +34,4 @@ list what tools I've installed (besides gcc):
 * `graphviz` for function graphs in Doxygen
 * `make`
 * `valgrind`
+* `exuberant-ctags`
