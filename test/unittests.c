@@ -11,7 +11,8 @@
  */
 int main()
 {
-
+    int pass = 0;
+    int total = 1;
 
     /* 1.1 Convert hex to base64 */
 
@@ -63,8 +64,6 @@ int main()
 
     crack_repeating_xor("data/crack_vigenere.txt");
 
-    // TODO: move to separate file for unit tests
-    // TODO: separate demo of solving challenges from unit testing
 /*
     test_func_1param("Hex to base64",
                      "Man",
@@ -87,7 +86,17 @@ int main()
                      base64_to_bytes);
 */
 
-    int ham = hamming_calc("this is a test", "wokka wokka!!!");
-    printf("[!] hamming=%d; expected 37.\n", ham);
+    pass += assert_equal_integers("hamming_calc() - 1.6 example",
+                                  37,
+                                  hamming_calc("this is a test", 
+                                               "wokka wokka!!!"));
+    
+    pass += assert_equal_integers("hamming_calc() - Xmas song",
+                                  76,
+                                  hamming_calc("Do They Know It's Christmas?",
+                                               "Bob Geldof & Midge Ure, 1984")); 
+
+    printf(" [!] %d of %d tests passed.\n", pass, total);
+
 }
 
